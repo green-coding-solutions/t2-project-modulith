@@ -9,20 +9,16 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    networks:
-      - t2-network
+
     setup-commands:
      - sleep 20 # wait some time to ensure that the database is ready
   gcb-mongo:
     image: mongo:5.0
-    networks:
-      - t2-network
+
   gcb-backend:
     build:
       context: .
-      dockerfile: Dockerfile.OpenJ9
-    setup-commands:
-       - sleep 10 # wait some time to ensure that the backend is ready
+      dockerfile: Dockerfile_OpenJ9
     depends_on:
       - gcb-postgres
       - gcb-mongo
@@ -30,16 +26,14 @@ services:
       MONGO_HOST: gcb-mongo
       POSTGRES_HOST: gcb-postgres
       SPRING_PROFILES_ACTIVE: gmt
-    networks:
-      - t2-network
+
   gcb-jmeter:
     image: t2project/jmeter@sha256:8d0543345f747ae512da2f0732fbd0ee760c7168415d2dce87e77d42fd14390a
     environment:
-      JVM_XMN: 100 # maximum nursery size
-      JVM_XMS: 250 # initial heap size
-      JVM_XMX: 500 # maximum heap size
-    networks:
-      - t2-network
+      JVM_XMN: 1g # maximum nursery size
+      JVM_XMS: 1g # initial heap size
+      JVM_XMX: 2g # maximum heap size
+
 
 
 sci:
@@ -54,7 +48,7 @@ flow:
         command: sleep 20
 
       - type: console
-        command: jmeter -Jhostname=gcb-backend -Jport=8080 -JnumExecutions=5 -JnumUser=5 -JrampUp=0 -JnumProducts=5 -JthinkTimeMin=1000 -JthinkTimeAdditionalRange=0 -JpauseBeforeExecution=0 -JpauseAfterExecution=0 -JloggingEnabled=true -n -t /tmp/repo/jmeter/jmeter-test-plan.jmx
+        command: jmeter -Jhostname=gcb-backend -Jport=8080 -JnumExecutions=5 -JnumUser=5 -JrampUp=0 -JnumProducts=5 -JthinkTimeMin=1000 -JthinkTimeAdditionalRange=0 -JpauseBeforeExecution=0 -JpauseAfterExecution=0 -JloggingEnabled=true -n -t /tmp/repo/jmeter-test-plan.jmx
         log-stdout: true
         read-notes-stdout: true
         read-sci-stdout: true
