@@ -25,7 +25,7 @@ services:
     environment:
       MONGO_HOST: gcb-mongo
       POSTGRES_HOST: gcb-postgres
-      SPRING_PROFILES_ACTIVE: gmt
+      SPRING_PROFILES_ACTIVE: simple
 
   gcb-jmeter:
     image: t2project/jmeter@sha256:8d0543345f747ae512da2f0732fbd0ee760c7168415d2dce87e77d42fd14390a
